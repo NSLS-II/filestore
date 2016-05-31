@@ -1,12 +1,11 @@
 language: python
 env:
   global:
-    - ANACONDA_USER=lightsource2
-    # if ANACONDA_CHANNEL is not defined then the conda package will be
-    # uploaded to the main channel.
-    - ANACONDA_CHANNEL="development"
-    - UPLOAD_ONLY_IF_BRANCH_IS="master"
     - secure: "URtCilMlIxGqUBaP4YHsLwBZO0ypNjl0g72dd7fXbPcJNhpHTEJy1K4MU7FP36ZCGx9RoRI60yjYVYmY/gp7Nw/SssZ75v1I+KMubtZ18LvRi9euurIPwxxsQAlY4ECn/baNgCl75zKFFtssUScuFX/i/zuPmkZMTBytXD6WMRc="
+    - python: 3.5
+    - RUN_TESTS: true
+    - BUILD_DOCS_BRANCH: 'auto-build'
+    - GH_REF: github.com/ericdill/ericdill.github.io
 
 git:
   # hack around git fetch --unshallow failing and nuking the whole CI
@@ -26,10 +25,14 @@ cache:
   directories:
     - $HOME/.cache/pip
 
-python:
-  - 2.7
-  - 3.4
-  - 3.5
+# python:
+#   - 2.7
+#   - 3.4
+#   - 3.5
+
+matrix:
+  include:
+    - BUILD_DOCS=true
 
 before_install:
   # clone conda install/build/upload helper scripts and make them executable
@@ -41,12 +44,10 @@ before_install:
 
 install:
   - export GIT_FULL_HASH=`git rev-parse HEAD`
-  - conda update conda
   - conda create -n testenv pip pytest python=$TRAVIS_PYTHON_VERSION pymongo six pyyaml numpy h5py jsonschema boltons
   - source activate testenv
   - conda install -c soft-matter pims tifffile
-  - pip install coveralls
-  - 'pip install https://github.com/NSLS-II/doct/zipball/master#egg=doct'
+  - pip install codecov
   - python setup.py install
   # Need to clean the python build directory (and other cruft) or pytest is
   # going to find the build directory and get confused why there are two sets
@@ -55,15 +56,16 @@ install:
 
 
 script:
-  - coverage run run_tests.py
-  - coverage report -m
-  # build the conda package on travis
-  # - . ~/scripts/conda-build.sh
+  - if [[ RUN_TESTS == 'true' ]]; then
+      coverage run run_tests.py;
+      coverage report -m;
+    fi;
+  - if [[ BUILD_DOCS == 'true' ]]; then
+      . ~/do-the-docs.sh;
+    fi;
 
 after_success:
-  - coveralls
-  # upload the conda package to the $ANACONDA_CHANNEL in $ANACONDA_USER
-  - . ~/scripts/anaconda-upload.sh
+  - codecov
 
 after_failure:
   - . ~/scripts/debug.sh
