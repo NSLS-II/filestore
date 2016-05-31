@@ -1,7 +1,8 @@
 language: python
 env:
   global:
-    - secure: "URtCilMlIxGqUBaP4YHsLwBZO0ypNjl0g72dd7fXbPcJNhpHTEJy1K4MU7FP36ZCGx9RoRI60yjYVYmY/gp7Nw/SssZ75v1I+KMubtZ18LvRi9euurIPwxxsQAlY4ECn/baNgCl75zKFFtssUScuFX/i/zuPmkZMTBytXD6WMRc="
+    # ericdill's github token for docs uploading
+    -   secure: "X7CKYhdVcyclRz7K6MT7JLEjWWwzI/xbYK5iEtsBPLcz2+bqHW1VFOPjVg+jh+lcjDbJyg2AWCrM1mIdRg4WP5u+ZEbrmKuF4VQ5mQVgjndVNM8NYPSBuhA5Q5wp1eJllEfJDq2KlgdVsNaLqwUs7nft63w1AA08ZV4RkxhseUM="
     - python: 3.5
     - RUN_TESTS: true
     - BUILD_DOCS_BRANCH: 'auto-build'
